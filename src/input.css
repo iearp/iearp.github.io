@@ -1,0 +1,17 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.legendItem {
+    display: flex;
+    flex-flow: row;
+
+    justify-content: space-between;
+}
+
+.legend {
+    background-color: #ebebeb;
+    padding: 2rem;
+    box-shadow: 0.01rem 0.02rem 0.5rem rgba(0,0,0, 0.6);
+    border-radius: 0.8rem;
+}

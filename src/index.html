@@ -1,0 +1,101 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,
+ initial-scale=1.0">
+    <link href="./output.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+        integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+        integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+</head>
+
+<body>
+    <div id="app-container" class="bg-slate-100 h-screen grid grid-cols-12">
+        <form id="menu" class="bg-slate-300 container shadow-xl col-span-3 flex flex-col flex-nowrap items-start gap-6 p-6">
+            <fieldset class="w-full py-8">
+                <label for="menu-item-cidade">Cidade</label>
+                <select id="menu-item-cidade" name="menu-item-cidade" class="reactive-control w-full form-select appearance-none px-4 py-3 rounded-md">
+                    <option value="3500907" selected>Altair</option>
+                    <option value="2700409">Atalaia</option>
+                    <option value="3505500">Barretos</option>
+                    <option value="3505906">Batatais</option>
+                    <option value="3506102">Bebedouro</option>
+                    <option value="2701209">Cacimbinhas</option>
+                    <option value="3512001">Colina</option>
+                    <option value="3512407">Cordeirópolis</option>
+                    <option value="2702702">Feliz Deserto</option>
+                    <option value="3516309">Francisco Morato</option>
+                    <option value="3517406">Guaíra</option>
+                    <option value="3517901">Guaraci</option>
+                    <option value="2703908">Jundiá</option>
+                    <option value="3525904">Jundiaí</option>
+                    <option value="3531506">Monte Azul Paulista</option>
+                    <option value="2705705">Olho d'Água das Flores</option>
+                    <option value="2706406">Pão de Açúcar</option>
+                    <option value="2706448">Paripueira</option>
+                    <option value="2706901">Pilar</option>
+                    <option value="2707107">Piranhas</option>
+                    <option value="2707602">Quebrangulo</option>
+                    <option value="3543402">Ribeirão Preto</option>
+                    <option value="3551900">Severínia</option>
+                    <option value="3553104">Taiaçú</option>
+                    <option value="3553658">Taquaral</option>
+                    <option value="3556800">Viradouro</option>
+                    <option value="3556909">Vista Alegre do Alto</option>
+                </select>
+            </fieldset>
+
+            <fieldset class="w-full">
+                <label for="menu-item-ano">Ano</label>
+                <select id="menu-item-ano" name="menu-item-ano" class="reactive-control w-full form-select appearance-none px-4 py-3 rounded-md">
+                    <option value="2021" selected>2021</option>
+                    <option value="2019">2019</option>
+                    <option value="2017">2017</option>
+                    <option value="2015">2015</option>
+                </select>
+            </fieldset>
+
+            <fieldset class="w-full">
+                <label for="menu-item-indicador">Indicador</label>
+                <select id="menu-item-indicador" name="menu-item-indicador" class="reactive-control w-full form-select appearance-none px-4 py-3 rounded-md">
+                    <option value="pca" selected>PCA</option>
+                    <option value="lp">Língua Portuguesa</option>
+                    <option value="mat">Matemática</option>
+                </select>
+            </fieldset>
+
+            <fieldset class="w-full">
+                <label for="menu-item-rede">Rede de ensino</label>
+                <select id="menu-item-rede" name="menu-item-rede" class="reactive-control w-full form-select appearance-none px-4 py-3 rounded-md">
+                    <option value="Todas" selected>Todas</option>
+                    <option value="Municipal">Municipal</option>
+                    <option value="Estadual">Estadual</option>
+                    <option value="Federal">Federal</option>
+                    <option value="Privada">Privada</option>
+                </select>
+            </fieldset>
+
+            <fieldset class="w-full">
+                <label for="menu-item-localizacao">Localização da escola</label>
+                <select id="menu-item-localizacao" name="menu-item-localizacao" class="reactive-control w-full form-select appearance-none px-4 py-3 rounded-md">
+                    <option value="Todas" selected>Todas</option>
+                    <option value="Urbana">Urbana</option>
+                    <option value="Rural">Rural</option>
+                </select>
+            </fieldset>
+        </form>
+        <div class="container col-span-9 p-6 h-full">
+            <div id="map" class="container h-full shadow-xl rounded-md border-2 border-slate-500 z-9"></div>
+        </div>
+    </div>
+
+    <script src="data_cidades.js"></script>
+    <script src="data_escolas.js"></script>
+    <script src="data_indicadores_escolas.js"></script>
+    <script src="input.js"></script>
+</body>
+
+</html>
