@@ -1,4 +1,4 @@
-const data_indicadores_escolas = [
+[
   {
     "cod": 27004023,
     "etapa": "Anos iniciais",

@@ -4,7 +4,6 @@
 
 function getColoredIcon(color) {
     var svg = `
-
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512"><!--!Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.-->
             <path 
             fill=${color} fill-opacity="1" stroke="#36454F" stroke-width="8"
@@ -19,7 +18,12 @@ function getColoredIcon(color) {
 }
 
 //0-25
-const tierFourColor = "#dc2626", tierThreeColor = "#ff6701", tierTwoColor = "#fde620", tierOneColor = "#54b400";
+const tierFourColor = "#dc2626";
+const tierThreeColor = "#ff6701";
+const tierTwoColor = "#fde620";
+const tierOneColor = "#54b400";
+const tierNullColor = "#BFBEC5";
+
 const TierFour = {
     "descricao": 
     {
@@ -59,8 +63,18 @@ const TierOne = {
     "icone": `background: ${tierOneColor};width:1rem;height:1rem;`,
     "marker": getColoredIcon(tierOneColor)
 };
+//when there is no value
+const TierNull = {
+    "descricao": 
+    {
+        "quantil": "N/A",
+        "absoluto": "N/A" 
+    },
+    "icone": `background: ${tierNullColor};width:1rem;height:1rem;`,
+    "marker": getColoredIcon(tierNullColor)
+};
 
-elementosLegenda = [TierOne, TierTwo, TierThree, TierFour];
+elementosLegenda = [TierOne, TierTwo, TierThree, TierFour, TierNull];
 
 function getSchoolsFromCity() {
     const selectedCityCode = document.getElementById('menu-item-cidade').value;
@@ -101,21 +115,24 @@ function renderMap() {
         if(indicador_escola != undefined) {
             switch(selectedIndicador) {
                 case "pca":
-                    tier_indicador = indicador_escola?.tier_pc;
-                    valor_indicador = indicador_escola?.pc;
+                    tier_indicador = indicador_escola.tier_pc ?? 0;
+                    valor_indicador = indicador_escola.pc ?? 0;
                     break;
                 case "lp":
-                    tier_indicador = indicador_escola?.tier_lp;
-                    valor_indicador = indicador_escola?.lp;
+                    tier_indicador = indicador_escola.tier_lp ?? 0 ;
+                    valor_indicador = indicador_escola.lp ?? 0;
                     break;
                 case "mat":
-                    tier_indicador = indicador_escola?.tier_mat;
-                    valor_indicador = indicador_escola?.mat;
+                    tier_indicador = indicador_escola.tier_mat ?? 0;
+                    valor_indicador = indicador_escola.mat ?? 0;
                     break;
             }
         }
         
         switch(tier_indicador) {
+            case 0:
+                icone = TierNull;
+                break;
             case 1:
                 icone = TierOne;
                 break;
@@ -165,4 +182,19 @@ renderMap();
 
 Array.from(document.getElementsByClassName('reactive-control')).forEach(function(elemento) { elemento.addEventListener('change', () => {
     renderMap();
+
+    map.removeControl(caption);
+
+    caption.onAdd = function() {
+        var div = L.DomUtil.create("div", "legend");
+        div.innerHTML += '<h4 style="text-align:center;font-weight: 800;font-size:1.125rem;">Legenda: </h4><br>';
+    
+        const selectedIndicador = document.getElementById('menu-item-indicador').value;
+        elementosLegenda.forEach(function(elemento) {
+            div.innerHTML += `<div class="legendItem"><div style="${elemento.icone}"></div><span>${selectedIndicador === "pca" ? elemento.descricao.quantil : elemento.descricao.absoluto}</span></div><br>`;
+        });
+      
+        return div;
+    };
+    caption.addTo(map);
 })});
