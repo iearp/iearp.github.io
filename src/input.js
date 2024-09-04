@@ -1,5 +1,5 @@
 // data_cidades from data_cidades.js "cod","cod_estado","nome","is_parceiro","lat","lon"
-// data_escolas from data_escolas.js "cod", "lat", "lon", "cod_municipio", "cod_estado", "nome", "localizacao", "rede"
+// data_escolas from data_escolas.js "cod", "lat", "lon", "id_municipio", "cod_estado", "nome", "localizacao", "rede"
 // data_indicadores_escolas from data_indicadores_escolas.js "cod", "ano", "lp", "mat", "pc", "tier_lp", "tier_mat", "tier_pc"
 
 function getColoredIcon(color) {
@@ -76,17 +76,41 @@ const TierNull = {
 
 elementosLegenda = [TierOne, TierTwo, TierThree, TierFour, TierNull];
 
-function getSchoolsFromCity() {
-    const selectedCityCode = document.getElementById('menu-item-cidade').value;
-    const selectedLocalizacao = document.getElementById('menu-item-localizacao').value;
+function getSchoolsFromCity(
+    selectedCity,
+    selectedEtapa,
+    selectedLocalizacao
+) {
 
-    const filteredSchoolsByCityCode = data_escolas.filter(escola => escola.cod_municipio === selectedCityCode);
+    const filteredSchoolsByCityCode = 
+        data_escolas.filter(
+            escola => escola.id_municipio == selectedCity
+        );
     
-    const filteredSchoolsByRede = filteredSchoolsByCityCode.filter(escola => escola.rede === 'Municipal');
+    const filteredSchoolsByRede = 
+        filteredSchoolsByCityCode.filter(
+            escola => escola.rede == 'Municipal'
+        );
 
-    const filteredSchoolsByLocalizacao = (selectedLocalizacao === "Todas" ? filteredSchoolsByRede : filteredSchoolsByRede.filter(escola => escola.localizacao === selectedLocalizacao));
+    const filteredSchoolsByLocalizacao = (
+        selectedLocalizacao === "Todas" ? filteredSchoolsByRede : 
+            filteredSchoolsByRede.filter(
+                escola => escola.localizacao == selectedLocalizacao
+            )
+        );
+
+    let filteredSchoolsByEtapa = filteredSchoolsByLocalizacao
+    if(selectedEtapa === "Anos iniciais") {
+        filteredSchoolsByEtapa = filteredSchoolsByEtapa.filter(
+            escola => escola.has_fund_ai === "true"
+        )
+    } else if (selectedEtapa === "Anos finais") {
+        filteredSchoolsByEtapa = filteredSchoolsByEtapa.filter(
+            escola => escola.has_fund_af === "true"
+        )
+    }
     
-    return filteredSchoolsByLocalizacao;
+    return filteredSchoolsByEtapa;
 }
 
 function getIndicadorForSchool(cod_escola, etapa, ano) {
@@ -95,19 +119,40 @@ function getIndicadorForSchool(cod_escola, etapa, ano) {
 
 function renderMap() {
     markersLayer.clearLayers();
-    
-    const filteredSchools = getSchoolsFromCity();
 
-    const selectedCity = data_cidades.find(cidade => cidade.cod == document.getElementById('menu-item-cidade').value);
-    const selectedIndicador = document.getElementById('menu-item-indicador').value;
-    const selectedAno = document.getElementById('menu-item-ano').value;
-    const selectedEtapa = document.getElementById('menu-item-etapa').value;
+    const selectedCity = 
+        document.getElementById('menu-item-cidade').value;
 
-    map.setView([selectedCity.lat, selectedCity.lon], map.getZoom());
+    const selectedIndicador = 
+        document.getElementById('menu-item-indicador').value;
+
+    const selectedAno = 
+        document.getElementById('menu-item-ano').value;
+
+    const selectedEtapa = 
+        document.getElementById('menu-item-etapa').value;
+
+    const selectedLocalizacao = 
+        document.getElementById('menu-item-localizacao').value;
+
+    const filteredCity = 
+        data_cidades.find(
+            cidade => cidade.cod == selectedCity
+        );
+
+    const filteredSchools = getSchoolsFromCity(
+        selectedCity,
+        selectedEtapa,
+        selectedLocalizacao,
+    );
 
     filteredSchools.forEach(function(escola) {
-        
-        const indicador_escola = getIndicadorForSchool(escola.cod, selectedEtapa, selectedAno);
+        const indicador_escola = 
+            getIndicadorForSchool(
+                escola.id, 
+                selectedEtapa, 
+                selectedAno
+            );
         
         let tier_indicador = 0, valor_indicador = "N/A";
         let icone;
@@ -148,22 +193,32 @@ function renderMap() {
             default:
                 icone = null;
         }
-        console.log(indicador_escola, escola.cod, indicador_escola, selectedIndicador,tier_indicador, valor_indicador);
+
+        console.log(indicador_escola, escola.id, indicador_escola, selectedIndicador,tier_indicador, valor_indicador);
+
+        map.setView([filteredCity.lat, filteredCity.lon], map.getZoom());
         
-        if(escola.lat != null && escola.lon != null && icone != null)
-            L.marker([escola.lat, escola.lon], {icon: icone.marker}).bindPopup(`<b>${escola.nome}</b><br>codigo: ${escola.cod}<br>rede: ${escola.rede}<br>valor indicador: ${valor_indicador}`).addTo(markersLayer);
+        if(escola.coordenadas_latitude != null && escola.coordenadas_longitude != null && icone != null)
+            L.marker(
+                [escola.coordenadas_latitude, escola.coordenadas_longitude], 
+                {icon: icone.marker}
+            ).bindPopup(
+                `<b>${escola.nome}</b><br>
+                codigo: ${escola.id}<br>
+                rede: ${escola.rede}<br>
+                valor indicador: ${valor_indicador}` 
+            ).addTo(markersLayer);
     });
 }
 
 var map = L.map('map');
 var markersLayer = L.layerGroup().addTo(map);
-
+map.setZoom(12);
 L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
     maxZoom: 25,
     attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
 }).addTo(map);
 
-map.setZoom(12);
 var caption = L.control({position: "bottomleft"});
 caption.onAdd = function() {
     var div = L.DomUtil.create("div", "legend");
