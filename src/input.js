@@ -79,8 +79,7 @@ elementosLegenda = [TierOne, TierTwo, TierThree, TierFour, TierNull];
 function getSchoolsFromCity(
     selectedCity,
     selectedEtapa,
-    selectedLocalizacao,
-    selectedAno
+    selectedLocalizacao
 ) {
 
     const filteredSchoolsByCityCode = 
@@ -103,17 +102,13 @@ function getSchoolsFromCity(
     let filteredSchoolsByEtapa = filteredSchoolsByLocalizacao
     if(selectedEtapa === "Anos iniciais") {
         filteredSchoolsByEtapa = filteredSchoolsByEtapa.filter(
-            escola => (escola.has_fund_ai === "true" || getIndicadorForSchool(escola.id, selectedEtapa, selectedAno) != null)
+            escola => escola.has_fund_ai === "true"
         )
     } else if (selectedEtapa === "Anos finais") {
         filteredSchoolsByEtapa = filteredSchoolsByEtapa.filter(
-            escola => (escola.has_fund_af === "true" || getIndicadorForSchool(escola.id, selectedEtapa, selectedAno) != null)
+            escola => escola.has_fund_af === "true"
         )
     }
-    //Since we dont have that info in the database, this is a quick fix for
-    //  when the school was not registered in previous year having a grade that 
-    //  it used to offer or something like that.
-    
     
     return filteredSchoolsByEtapa;
 }
@@ -149,7 +144,6 @@ function renderMap() {
         selectedCity,
         selectedEtapa,
         selectedLocalizacao,
-        selectedAno
     );
 
     filteredSchools.forEach(function(escola) {
